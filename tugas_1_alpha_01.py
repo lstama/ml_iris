@@ -23,13 +23,13 @@ def theta_gradient(x, theta, bias, result):
     ans = []
     for i in range(4):
         h = activation_function(target_function(x, theta, bias))
-        temp = 2 * x[i] * ( result -  h) * (1 - h)
+        temp = 2 * x[i] * ( result -  h) * (1 - h) * h
         ans.append(temp)
     return ans
     
 def bias_gradient(x, theta, bias, result):
     h = activation_function(target_function(x, theta, bias))
-    temp = 2 * ( result -  h) * (1 - h)
+    temp = 2 * ( result -  h) * (1 - h) * h
     return temp
 
 def theta_now(theta, theta_grad, learning_rate):
