@@ -43,35 +43,44 @@ def bias_now(bias, bias_grad, learning_rate):
 data = read_data()
 data = data.head(100)
 data[4] = data[4].map({'Iris-setosa' : 0.0, 'Iris-versicolor' : 1.0})
+validation = pd.concat([data[40:50], data[90:100]])
+data = pd.concat([data[0:40], data[50:90]])
+#print(validation)
 theta = [0.5, 0.5, 0.5, 0.5]
 bias = 0.5
 error = []
-print(data.head())
+v_error = []
+#print(data)
 for i in range(60):
     total_error = 0.0
-    er = []
     for index,row in data.iterrows():
         x = row[0:4]
-        #print(x)
-        #print(row[4])
         function_value = target_function(x, theta, bias)
-        #print(function_value)
         after_activated = activation_function(function_value)
-        #print(after_activated)
         err = error_function(after_activated, row[4])
-        #er.append(err)
-        #print(err)
         total_error = total_error + err
         theta_grad = theta_gradient(x, theta, bias, row[4])
         bias_grad = bias_gradient(x, theta, bias, row[4])
         theta = theta_now(theta, theta_grad, 0.1)
         bias = bias_now(bias, bias_grad, 0.1)
-    #print(total_error)
-    #print(sorted(er))
-    print("average error epoch " + str(i+1) + " = " + str(total_error / 100.0) )
+    
+    total_v_error = 0.0
+    for index,row in validation.iterrows():
+        x = row[0:4]
+        function_value = target_function(x, theta, bias)
+        after_activated = activation_function(function_value)
+        v_err = error_function(after_activated, row[4])
+        total_v_error = total_v_error + v_err
+        
+    print("average error epoch " + str(i+1) + " = " + str(total_error / 100.0) 
+            + ". average validation error = " + str(total_v_error / 100.0) )
     error.append(total_error / 100.0)
+    v_error.append(total_v_error / 100.0)
 
 plt.plot(error)
+plt.plot(v_error)
 plt.ylabel('error')
+plt.xlabel('epoch')
+plt.legend(['training', 'validation'], loc='upper left')
 plt.yscale('log')
 plt.show()
